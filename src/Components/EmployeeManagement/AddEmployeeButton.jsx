@@ -13,7 +13,6 @@ const AddEmployee = (props) => {
         recordId={0}
         updateEmployeeDataAfterActionClick={props.updateEmployeeDataAfterActionClick} 
       /> 
-      {/* <button className="float-right bg-color-1 color-1 btn" onClick={() => props.updateModelHideShowStatus(true)}>+ Add Employee</button> */}
     </>
   )
 }

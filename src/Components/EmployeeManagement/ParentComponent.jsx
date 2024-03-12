@@ -35,34 +35,7 @@ function EmployeeManagementParentComponent() {
     address: "Tuticorin",
     dob: "01/06/1992"
   },
-  {
-    id: 5,
-    name: "Dhinesh kumar",
-    designation: "Technical Lead",
-    address: "Salem",
-    dob: "01/03/1990"
-  },
-  {
-    id: 6,
-    name: "Lokeshwaran",
-    designation: "Senior Technical Architect",
-    address: "Virudhunagar",
-    dob: "07/09/1992"
-  },
-  {
-    id: 7,
-    name: "Arun Kumar",
-    designation: "Technical Architect",
-    address: "Madurai",
-    dob: "01/06/1992"
-  },
-  {
-    id: 8,
-    name: "Maheshwaran",
-    designation: "Quality Analyst",
-    address: "Tirunelveli",
-    dob: "01/09/1991"
-  }]);
+  ]);
   const [searchEmployee, setSearchEmployee] = useState('');
   const [dataToShow, updateEmployeeData] = useState([]);
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
@@ -70,6 +43,7 @@ function EmployeeManagementParentComponent() {
   const [modalType, setModalType] = useState('');
   const [modalTitle, setModalTitle] = useState('');
 
+  /* Whenever the search input value will got changes, this useEffect will trigger */
   useEffect(() => {
     if (searchEmployee) {
       const searchedEmployeeResult = employeeDetails.filter(employeeDetails => employeeDetails.name.toLowerCase().indexOf(searchEmployee.toLowerCase()) !== -1)
@@ -90,55 +64,45 @@ function EmployeeManagementParentComponent() {
   const updateModelHideShowStatus = (status) => {
     setShowAddEmployeeModal(status)
   }
-
+  const Capitalize = (capitalizeNeedeData) => {
+    return capitalizeNeedeData[0].toUpperCase() + capitalizeNeedeData.slice(1);
+  }
   const updateEmployeeDataAfterActionClick = (actionDetails) => {
-    console.log("actionDetails", actionDetails)
-    // console.log("actionType", actionType)
     let updatedEmployeeDetails = []
-    if(actionDetails.action == "delete"){
-        updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== actionDetails.recordId);
-        console.log("updatedEmployeeDetails", updatedEmployeeDetails);
-        updateEmployeeData(updatedEmployeeDetails);
-        setEmployeeDetails(updatedEmployeeDetails);
-    } else if(actionDetails.action == "view") {
-        setShowAddEmployeeModal(true)
-        setSelectedRecordId(actionDetails.recordId)
-        setModalType('view')
-        setModalTitle('View Employee Details')
-    } else if(actionDetails.action == "edit") {
-        setShowAddEmployeeModal(true)
-        setSelectedRecordId(actionDetails.recordId)
-        setModalType('edit')
-        setModalTitle('Edit Employee Details')
-    } else if(actionDetails.action == 'add'){
+
+    if (actionDetails.action == "delete") {
+      updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== actionDetails.recordId);
+      updateEmployeeData(updatedEmployeeDetails);
+      setEmployeeDetails(updatedEmployeeDetails);
+    } else if (actionDetails.action == "view" || actionDetails.action == "edit" || actionDetails.action == "add") {
       setShowAddEmployeeModal(true)
-      setSelectedRecordId(0)
-      setModalType('add')
-    } 
-        
+      actionDetails.action == "add" ? setSelectedRecordId(0) : setSelectedRecordId(actionDetails.recordId)
+      setModalType(actionDetails.action)
+      setModalTitle(Capitalize(actionDetails.action) + ' Employee Details')
+    }
   }
 
   return (
     <>
-   { showAddEmployeeModal && 
-      <ModalPopup
-        modalTitle={modalTitle}
-        modalType={modalType}
-        recordId={selectedRecordId}
-        updateModelHideShowStatus={updateModelHideShowStatus}
-        showAddEmployeeModal={showAddEmployeeModal}
-        employeeDetails={employeeDetails}
-        updateEmployeeDetailList={(employeeData) => {
-          setEmployeeDetails(employeeData);
-          updateEmployeeData(employeeData);
-        }}
-      />}
+      {showAddEmployeeModal &&
+        <ModalPopup
+          modalTitle={modalTitle}
+          modalType={modalType}
+          recordId={selectedRecordId}
+          updateModelHideShowStatus={updateModelHideShowStatus}
+          showAddEmployeeModal={showAddEmployeeModal}
+          employeeDetails={employeeDetails}
+          updateEmployeeDetailList={(employeeData) => {
+            setEmployeeDetails(employeeData);
+            updateEmployeeData(employeeData);
+          }}
+        />}
       <div className="actions-sec">
         <EmployeeSearch searchEmployee={searchEmployee} updateSearchedKey={updateSearchedKey} />
         <AddEmployeeButton updateModelHideShowStatus={updateModelHideShowStatus} updateEmployeeDataAfterActionClick={updateEmployeeDataAfterActionClick} />
       </div>
       <div className="content-sec">
-        { (dataToShow.length > 0) ? <EmployeeList employeeDetails={dataToShow} updateEmployeeDataAfterActionClick={updateEmployeeDataAfterActionClick} /> : <p className="txt-24">No data found</p> }
+        {(dataToShow.length > 0) ? <EmployeeList employeeDetails={dataToShow} updateEmployeeDataAfterActionClick={updateEmployeeDataAfterActionClick} /> : <p className="txt-24">No data found</p>}
       </div>
 
     </>

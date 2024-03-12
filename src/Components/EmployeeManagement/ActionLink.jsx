@@ -7,13 +7,7 @@ const ActionLink = (props) => {
         title={props.linkTitle}
         onClick={ () => props.updateEmployeeDataAfterActionClick({recordId: props.recordId ? props.recordId : 0, action:props.actionType})}
       >
-        { props.imageLink && 
-          <img src={props.imageLink} />
-        }
-        { !props.imageLink && 
-          props.linkTitle
-        }
-        
+        { props.imageLink ? <img src={props.imageLink} /> : props.linkTitle}
       </button>    
   )
 }
