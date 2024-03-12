@@ -1,0 +1,20 @@
+.box{
+  box-shadow: 4px 2px 2px 4px grey;
+}
+ol{padding-left: 0;}
+ol li{
+  text-align: left;
+  margin: 10px;
+}
+.bold-500{
+  font-weight: 500;
+}
+table, th, td {
+  border: 1px solid black;
+  padding: 5px;
+  text-align: left;
+}
+thead{
+  background-color: #80808085;
+  color: #000;
+}

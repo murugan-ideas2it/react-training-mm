@@ -1,0 +1,18 @@
+input{
+  padding: 10px;
+  margin: 10px 5px;
+  box-shadow: 1px 1px 3px 1px #bc979775;
+  border: 1px solid black;
+  width: 90%;
+}
+.history-box{
+  overflow-y: auto;
+  width: 70%;
+}
+.error{
+  color: red;
+  margin: 0;
+}
+.w-30{
+  width: 30%;
+}

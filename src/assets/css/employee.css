@@ -1,0 +1,110 @@
+.profile-img {
+  position: relative;
+}
+
+.avatar-img {
+  height: 100px;
+  width: 100px;
+}
+
+.userList {
+  display: block;
+  grid-template-columns: auto auto auto auto;
+  column-gap: 20px;
+  row-gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+.userInfo {
+  background-color: #fff;
+  padding: 0;
+  position: relative;
+  border-radius: 5px;
+  width: 260px;
+  display: inline-block;
+  margin: 10px;
+  text-align: center;
+  float: left;
+}
+
+.userInfo:before {
+  content: "";
+  width: 100%;
+  background-color: red;
+  height: 30%;
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  margin: auto;
+  display: block;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.userInfoBox {
+  padding: 50px 0 10px;
+}
+
+.bg-overlay-1:before {
+  background-color: #7b68e3;
+}
+
+.bg-overlay-2:before {
+  background-color: #ba55d3;
+}
+
+.bg-overlay-3:before {
+  background-color: #ff4500;
+}
+
+.bg-overlay-4:before {
+  background-color: #191970;
+}
+
+.bg-overlay-5:before {
+  background-color: #dda0dd;
+}
+
+.bg-overlay-6:before {
+  background-color: #db7093;
+}
+
+.bg-overlay-7:before {
+  background-color: #663399;
+}
+
+.bg-overlay-8:before {
+  background-color: #ff8c00;
+}
+
+.socialLinks {
+  margin: 20px auto 5px;
+}
+
+a.socialButton {
+  padding: 5px 50px;
+  border: 1px solid #97a5b3;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin: auto 2px;
+}
+
+a.socialButton:hover, 
+.socialIconLink:hover{
+  background-color: #dc3546;
+  color: #fff;;
+}
+
+.socialIconLink {
+  border: 1px solid #97a5b3;
+  padding: 5px;
+  vertical-align: middle;
+  border-radius: 4px;
+  margin: auto 2px;
+}
+
+
+.socialIconLink img {
+  max-width: 25px;
+}

@@ -1,0 +1,10 @@
+button:disabled, 
+button[disabled],
+button.disabled {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+button:focus, button:focus-visible{
+  outline: unset;
+}
