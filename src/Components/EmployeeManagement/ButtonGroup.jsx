@@ -6,12 +6,12 @@ const ButtonGroup = (props) => {
     <>
       <button
         className={"bg-color-1 color-1 btn"}
-        onClick={() => props.addOrUpdateEmployee(true)}
+        type="submit"
       >Save
       </button>
-      <button
+      <button type='button'
         className="bg-color-1 color-1 btn"
-        onClick={() => props.addOrUpdateEmployee(false)}
+        onClick={() => props.resetForm(true)}
       >Cancel
       </button>
     </>
@@ -19,7 +19,8 @@ const ButtonGroup = (props) => {
 }
 
 ButtonGroup.propTypes = {
-  addOrUpdateEmployee: PropTypes.func
+  addOrUpdateEmployee: PropTypes.func,
+  resetForm: PropTypes.func
 }
 
 export default ButtonGroup
