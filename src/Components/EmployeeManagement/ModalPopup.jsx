@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios"
 import PropTypes from 'prop-types';
 import '../../assets/css/modelForm.css';
 import ButtonGroup from "./ButtonGroup";
@@ -8,8 +9,9 @@ const ModalPopup = (props) => {
   const [designation, setDesignation] = useState('')
   const [address, setAddress] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const [selectedRecordId, setSelectedRecordId] = useState(props.recordId);
   /* view, edit and delete purpose selected record Id will store this state */
+  const [selectedRecordId, setSelectedRecordId] = useState(props.recordId);
+  
 
   /* Whenever the user click the edit or view link this useEffect will trigger and fetch and set the modal form data */
   useEffect(() => {
@@ -38,7 +40,37 @@ const ModalPopup = (props) => {
 
   };
 
-  const addOrUpdateEmployee = (event) => { 
+  const updateRecord = async (recordData, methodType) => {
+    props.setShowLoading(true);
+    try {
+      props.setShowAPIError(false)
+      const result = await axios.post('https://reqres.in/api/users', recordData);
+      if (methodType == 'add') {
+        result.data.id = parseInt(result.data.id);
+        props.updateEmployeeDetailList([
+          result.data,
+          ...props.employeeDetails
+        ])
+      } else if (methodType == 'edit') {
+        result.data.id = recordData.id;
+        if (recordData.id > -1) {
+          const recordObject = props.employeeDetails.findIndex(record => record.id === recordData.id);
+          props.employeeDetails[recordObject].id = recordData.id;
+          props.employeeDetails[recordObject].name = recordData.name;
+          props.employeeDetails[recordObject].designation = recordData.designation;
+          props.employeeDetails[recordObject].address = recordData.address;
+        }
+        props.updateEmployeeDetailList(props.employeeDetails);
+      }
+
+    } catch (error) {
+      props.setShowAPIError(true)
+      console.log("error", error);
+    }
+    props.setShowLoading(false);
+
+  }
+  const addOrUpdateEmployee = (event) => {
     event.preventDefault();
     /* Add or Edit popup to save data  */
     const employeeName = event.target.name.value;
@@ -47,28 +79,11 @@ const ModalPopup = (props) => {
     if (name && designation && address) {
       /** Update edited record */
       if (selectedRecordId && (selectedRecordId !== 0)) {
-        const recordObject = props.employeeDetails.findIndex(record => record.id === selectedRecordId);
-        if (recordObject > -1) {
-          props.employeeDetails[recordObject].name = employeeName;
-          props.employeeDetails[recordObject].designation = employeeDesignation;
-          props.employeeDetails[recordObject].address = employeeAddress;
-        }
-
-        props.updateEmployeeDetailList(props.employeeDetails);
+        updateRecord({ id: selectedRecordId, name: employeeName, designation: employeeDesignation, address: employeeAddress }, 'edit')
         resetForm(true);
-
       } else {
-      /* Add new record */
-             
-        props.updateEmployeeDetailList([
-          {
-            id: (props.employeeDetails.length + 1),
-            name, designation,
-            address
-          },
-          ...props.employeeDetails
-        ])
-        
+        /* Add new record */
+        updateRecord({ name, designation, address }, 'add')
       }
       resetForm(true);
     } else {
@@ -129,7 +144,8 @@ ModalPopup.propTypes = {
   employeeDetails: PropTypes.array,
   showAddEmployeeModal: PropTypes.bool,
   modalTitle: PropTypes.string,
-  setShowLoading: PropTypes.func
+  setShowLoading: PropTypes.func,
+  setShowAPIError: PropTypes.func
 }
 
 export default ModalPopup

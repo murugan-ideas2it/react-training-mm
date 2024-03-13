@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios"
 import EmployeeSearch from "./EmployeeSearch.jsx"
 import AddEmployeeButton from "./AddEmployeeButton.jsx"
 import ModalPopup from "./ModalPopup.jsx"
@@ -42,6 +43,8 @@ function EmployeeManagementParentComponent() {
   const [selectedRecordId, setSelectedRecordId] = useState(0);
   const [modalType, setModalType] = useState('');
   const [modalTitle, setModalTitle] = useState('');
+  const [showLoading, setShowLoading] = useState(false);
+  const [showAPIError, setShowAPIError] =useState(false);
 
   /* Whenever the search input value will got changes, this useEffect will trigger */
   useEffect(() => {
@@ -67,13 +70,27 @@ function EmployeeManagementParentComponent() {
   const Capitalize = (capitalizeNeedeData) => {
     return capitalizeNeedeData[0].toUpperCase() + capitalizeNeedeData.slice(1);
   }
-  const updateEmployeeDataAfterActionClick = (actionDetails) => {
-    let updatedEmployeeDetails = []
 
-    if (actionDetails.action == "delete") {
-      updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== actionDetails.recordId);
+  const deleteRecord = async (recordData) => {
+    setShowLoading(true);
+    try {
+      setShowAPIError(false)
+      const result = await axios.delete('https://reqres.in/api/users', recordData);
+      let updatedEmployeeDetails = []
+      updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== recordData);
       updateEmployeeData(updatedEmployeeDetails);
       setEmployeeDetails(updatedEmployeeDetails);
+    } catch (error) {
+      setShowAPIError(true)
+      console.log('error', error)
+    }
+    setShowLoading(false);
+  }
+
+  const updateEmployeeDataAfterActionClick = (actionDetails) => {
+
+    if (actionDetails.action == "delete") {
+      deleteRecord(actionDetails.recordId)
     } else if (actionDetails.action == "view" || actionDetails.action == "edit" || actionDetails.action == "add") {
       setShowAddEmployeeModal(true)
       actionDetails.action == "add" ? setSelectedRecordId(0) : setSelectedRecordId(actionDetails.recordId)
@@ -84,14 +101,19 @@ function EmployeeManagementParentComponent() {
 
   return (
     <>
+      {showLoading &&
+        <div className="loading"></div>
+      }
       {showAddEmployeeModal &&
         <ModalPopup
+          setShowAPIError={setShowAPIError}
           modalTitle={modalTitle}
           modalType={modalType}
           recordId={selectedRecordId}
           updateModelHideShowStatus={updateModelHideShowStatus}
           showAddEmployeeModal={showAddEmployeeModal}
           employeeDetails={employeeDetails}
+          setShowLoading={setShowLoading}
           updateEmployeeDetailList={(employeeData) => {
             setEmployeeDetails(employeeData);
             updateEmployeeData(employeeData);
@@ -102,7 +124,7 @@ function EmployeeManagementParentComponent() {
         <AddEmployeeButton updateModelHideShowStatus={updateModelHideShowStatus} updateEmployeeDataAfterActionClick={updateEmployeeDataAfterActionClick} />
       </div>
       <div className="content-sec">
-        {(dataToShow.length > 0) ? <EmployeeList employeeDetails={dataToShow} updateEmployeeDataAfterActionClick={updateEmployeeDataAfterActionClick} /> : <p className="txt-24">No data found</p>}
+        {(dataToShow.length > 0) ? <EmployeeList showAPIError={showAPIError} employeeDetails={dataToShow} updateEmployeeDataAfterActionClick={updateEmployeeDataAfterActionClick} /> : <p className="txt-24">No data found</p>}
       </div>
 
     </>

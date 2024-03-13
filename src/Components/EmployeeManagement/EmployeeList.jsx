@@ -4,6 +4,10 @@ import '../../assets/css/employee.css'
 
 const EmployeeList = (props) => {
   return (
+    <>
+    {props.showAPIError && 
+      <p>Something went wrong</p>
+    }
     <ul className="ds-grid userList">
       {props.employeeDetails.map((employeeInfo, index) => (
         <li key={index} className={"userInfo bg-overlay-" + (index > 8 ? (index % 8) : (index + 1))}>
@@ -11,11 +15,13 @@ const EmployeeList = (props) => {
         </li>
       ))}
     </ul>
+    </>
   )
 }
 
 EmployeeList.propTypes = {
   employeeDetails: PropTypes.arrayOf(PropTypes.object),
-  updateEmployeeDataAfterActionClick: PropTypes.func
+  updateEmployeeDataAfterActionClick: PropTypes.func,
+  showAPIError: PropTypes.bool
 }
 export default EmployeeList
