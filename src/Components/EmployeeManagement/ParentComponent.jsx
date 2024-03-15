@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios"
+import {DeleteEmployee} from "../../Services/EmployeeService.js";
 import EmployeeSearch from "./EmployeeSearch.jsx"
 import AddEmployeeButton from "./AddEmployeeButton.jsx"
 import ModalPopup from "./ModalPopup.jsx"
@@ -44,7 +44,7 @@ function EmployeeManagementParentComponent() {
   const [modalType, setModalType] = useState('');
   const [modalTitle, setModalTitle] = useState('');
   const [showLoading, setShowLoading] = useState(false);
-  const [showAPIError, setShowAPIError] =useState(false);
+  const [showAPIError, setShowAPIError] = useState(false);
 
   /* Whenever the search input value will got changes, this useEffect will trigger */
   useEffect(() => {
@@ -73,18 +73,24 @@ function EmployeeManagementParentComponent() {
 
   const deleteRecord = async (recordData) => {
     setShowLoading(true);
-    try {
-      setShowAPIError(false)
-      const result = await axios.delete('https://reqres.in/api/users', recordData);
-      let updatedEmployeeDetails = []
-      updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== recordData);
-      updateEmployeeData(updatedEmployeeDetails);
-      setEmployeeDetails(updatedEmployeeDetails);
-    } catch (error) {
-      setShowAPIError(true)
-      console.log('error', error)
-    }
-    setShowLoading(false);
+    setShowAPIError(false)
+    DeleteEmployee(recordData, (error, result) => {
+      if (error) {
+        let updatedEmployeeDetails = []
+        updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== recordData);
+        updateEmployeeData(updatedEmployeeDetails);
+        setEmployeeDetails(updatedEmployeeDetails);
+        console.log('error', error)
+        setShowLoading(false);
+      } else if (result) {
+        let updatedEmployeeDetails = []
+        updatedEmployeeDetails = employeeDetails.filter(employeeDetail => employeeDetail.id !== recordData);
+        updateEmployeeData(updatedEmployeeDetails);
+        setEmployeeDetails(updatedEmployeeDetails);
+        setShowLoading(false);
+      }
+    });
+
   }
 
   const updateEmployeeDataAfterActionClick = (actionDetails) => {

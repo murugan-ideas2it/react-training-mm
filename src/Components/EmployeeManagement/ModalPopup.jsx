@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "axios"
 import PropTypes from 'prop-types';
 import '../../assets/css/modelForm.css';
 import ButtonGroup from "./ButtonGroup";
+import {AddEmployee, EditEmployee} from "../../Services/EmployeeService.js";
+
 
 const ModalPopup = (props) => {
   const [name, setName] = useState('')
@@ -11,7 +12,7 @@ const ModalPopup = (props) => {
   const [errorMessage, setErrorMessage] = useState('')
   /* view, edit and delete purpose selected record Id will store this state */
   const [selectedRecordId, setSelectedRecordId] = useState(props.recordId);
-  
+
 
   /* Whenever the user click the edit or view link this useEffect will trigger and fetch and set the modal form data */
   useEffect(() => {
@@ -40,34 +41,49 @@ const ModalPopup = (props) => {
 
   };
 
-  const updateRecord = async (recordData, methodType) => {
-    props.setShowLoading(true);
-    try {
-      props.setShowAPIError(false)
-      const result = await axios.post('https://reqres.in/api/users', recordData);
-      if (methodType == 'add') {
-        result.data.id = parseInt(result.data.id);
-        props.updateEmployeeDetailList([
-          result.data,
-          ...props.employeeDetails
-        ])
-      } else if (methodType == 'edit') {
-        result.data.id = recordData.id;
-        if (recordData.id > -1) {
-          const recordObject = props.employeeDetails.findIndex(record => record.id === recordData.id);
-          props.employeeDetails[recordObject].id = recordData.id;
-          props.employeeDetails[recordObject].name = recordData.name;
-          props.employeeDetails[recordObject].designation = recordData.designation;
-          props.employeeDetails[recordObject].address = recordData.address;
-        }
-        props.updateEmployeeDetailList(props.employeeDetails);
-      }
+  const updateRecord = (recordData, methodType) => {
 
-    } catch (error) {
-      props.setShowAPIError(true)
-      console.log("error", error);
+    props.setShowLoading(true);
+    props.setShowAPIError(false)
+    /* Add Employee Details */
+    if (methodType == 'add') {
+      AddEmployee(recordData, (error, result) => {
+        if (error) {
+          props.setShowAPIError(true)
+          console.log("error", error);
+          props.setShowLoading(false);
+        } else if (result) {
+          result.data.id = parseInt(result.data.id);
+          props.updateEmployeeDetailList([
+            result.data,
+            ...props.employeeDetails
+          ])
+          props.setShowLoading(false);
+
+        }
+      })
+/* Edit Employee details */
+    } else if (methodType == 'edit') {
+      EditEmployee(recordData, (error, result) => {
+        if (error) {
+          props.setShowAPIError(true)
+          console.log("error", error);
+          props.setShowLoading(false);
+        } else if (result) {
+
+          result.data.id = recordData.id;
+          if (recordData.id > -1) {
+            const recordObject = props.employeeDetails.findIndex(record => record.id === recordData.id);
+            props.employeeDetails[recordObject].id = recordData.id;
+            props.employeeDetails[recordObject].name = recordData.name;
+            props.employeeDetails[recordObject].designation = recordData.designation;
+            props.employeeDetails[recordObject].address = recordData.address;
+          }
+          props.updateEmployeeDetailList(props.employeeDetails);
+          props.setShowLoading(false);
+        }
+      });
     }
-    props.setShowLoading(false);
 
   }
   const addOrUpdateEmployee = (event) => {
